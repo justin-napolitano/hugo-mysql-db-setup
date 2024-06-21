@@ -1,5 +1,5 @@
 +++
-title =  "Automate Posting Hugo Blog to Social Sites...with a db"
+title =  "Automate Posting Hugo Blog to Social Sites (with a db) Part 2"
 date = "2024-06-15"
 description = "How To automate posting to social sites"
 author = "Justin Napolitano"
@@ -10,9 +10,7 @@ images = ["images/feature-image.png"]
 
 ## Background
 
-In the previous few posts I detailed my progress in automating a site.  I am going about this by using an rss scraper to post new posts to social. 
 
-I had initally thought about doing this really naively, but I want a database. It doesn't feel right without using one. I am somewhat upset with myself, because I am basically just recreating wordpress... but so it goes. 
 
 ### Previous posts in this series
 
@@ -21,132 +19,116 @@ I had initally thought about doing this really naively, but I want a database. I
 3. [part 3](https://jnapolitano.com/en/posts/mysql-install-buntu/)
 4. [part 4](https://jnapolitano.com/en/posts/mysql-config/)
 5. [part 5](https://jnapolitano.com/en/posts/hugo-rss-setup/)
-
-### Expand a previous script
-
-In [a previous post](https://jnapolitano.com/en/posts/python-rss-reader/) I wrote about how to scan an rss feed on my personal site. In this post I will expand upon that to update some tables in a mysql database that I generated in [this post](https://jnapolitano.com/en/posts/mysql-config/)
-
-## Add support for mysql 
-
-### MySQL python connector manual 
-
-* https://dev.mysql.com/doc/connector-python/en/connector-python-introduction.html
+6. [part 6](https://jnapolitano.com/en/posts/hugo-rss-mysql-update/)
 
 
-### Instal connector with pip
 
-I created a virtual enviornment prior to starting this exercise. Review the [virtualenv documentation](https://virtualenv.pypa.io/en/latest/) for more information.  The source below is my path to thevirtualenviornment's bin.  
+### Expand a the mysql class
 
-I am install the connector and the xdev extensions. TBH I do not know what the extensions are but i'm just going to go ahead and install them now before i write a script that ends up needing those extra libs. 
+I create a [repo](https://github.com/justin-napolitano/mysql-utility-class.git) at ```https://github.com/justin-napolitano/mysql-utility-class.git``` to enable importing as a submodule the class that i have been workign on. 
+
+### Set up the db
+
+In [another part in this series](https://jnapolitano.com/en/posts/mysql-config/), I detailed setting up the mysql db via the command line. I am going to furher that workflow by modifying the files in that repo and then running thm to generat tables within my instance of mysql.
+
+
+## Setup you dev environment...again
+
+### Copy the .env file
+
+
+Copy over the .env files from the previous few steps. 
+
+### Import the Config repo 
+
+```bash
+
+git submodule add https://github.com/justin-napolitano/mysql-config.git mysql-config
+
+```
+
+### Import the utility class repo
 
 ```bash
 
-source ~/venvs/feedparser/bin/activate && pip install mysql-connector-python && pip install mysqlx-connector-python
+git submodule add https://github.com/justin-napolitano/mysql-utility-class.git mysql-utility-class   
 
 ```
 
-### Install python-dotenv with pip
 
-I plan to containerize this later. Using .env files formt he start will be a good way of making this portable later.  
+### Setup the package as a module 
+
+#### From root drop an empty __init_.py file
 
 ```bash 
 
-pip install python-dotenv
-
+touch __init__.py
 ```
 
-### Create a .env file with your environmental variables
+#### From the utility class directory drop another __init__.py
+
+This one however will contain a relative import to enable access to the class
+
+##### Touch
 
 ```bash 
-touch .env
+cd {to the utility class directory} && touch __init__.py
+
 ```
+
+##### Echo to file
 
 ```bash
-vim .env
-```
 
-```vim
-
-DB_USER=cobra 
-DB_PASSWORD=password
-DB_HOST=127.0.0.1
-DB_NAME=posts
+echo "from .MySQLConnector import MySQLConnector" > __init__.py
 
 ```
 
-### Create a utility class to be able to reuse this code
+#### Check the module hierarchy
 
-#### connector method reference
+We should be looking like this
 
-```https://dev.mysql.com/doc/connector-python/en/connector-python-api-mysqlconnection.html```
 
-Something like below is a good way to get started. 
+
+```markdown
+your_project/
+|-- __init__.py
+|-- main.py
+|-- .env
+`-- MySQLConnector/
+    |-- __init__.py
+    `-- MySQLConnector.py
+```
+
+## Create the main file
+
+### Touch main.py
+
+```bash
+
+touch main.,py
+
+```
+
+
+### Modify main.py
+
+My file currently looks like this to test the connect 
 
 ```python
-import mysql.connector
-from mysql.connector import Error
+
+from MySQLConnector import MySQLConnector
+
 from dotenv import load_dotenv
 import os
 
-class MySQLConnector:
-    def __init__(self):
-        self.user = os.getenv('DB_USER')
-        self.password = os.getenv('DB_PASSWORD')
-        self.host = os.getenv('DB_HOST')
-        self.database = os.getenv('DB_NAME')
-        self.connection = None
 
-    def connect(self):
-        try:
-            self.connection = mysql.connector.connect(
-                user=self.user,
-                password=self.password,
-                host=self.host,
-                database=self.database
-            )
-            if self.connection.is_connected():
-                print("Connected to MySQL database")
-        except Error as e:
-            print(f"Error while connecting to MySQL: {e}")
 
-    def disconnect(self):
-        if self.connection.is_connected():
-            self.connection.close()
-            print("MySQL connection is closed")
-
-# Usage example
 if __name__ == "__main__":
     load_dotenv()  # Load environment variables from .env file
-    db = MySQLConnector()
-    db.connect()
-    db.disconnect()
+    connection = MySQLConnector()
+    connection.connect()
+    connection.disconnect()
 
 ```
-
-### Verify that your server is running 
-
-run..on most *nix-ish systems
-
-
-```bash
-
-systemctl status mysql
-
-```
-
-### Run your test program
-
->> Note do not call your class mysql.py... it will overwride the library and fail to import. 
-
-```bash
-
-python db-connector.py
-
-```
-
-#### Output
-
-The output should look somethign like this...
-
-![successful-test](./images/test-output.png)
 
