@@ -1,12 +1,25 @@
 ---
-slug: "github-hugo-mysql-db-setup"
-title: "hugo-mysql-db-setup"
-repo: "justin-napolitano/hugo-mysql-db-setup"
-githubUrl: "https://github.com/justin-napolitano/hugo-mysql-db-setup"
-generatedAt: "2025-11-23T09:06:35.619764Z"
-source: "github-auto"
+slug: github-hugo-mysql-db-setup
+title: Automating MySQL Database Setup for Hugo Blog Integration
+repo: justin-napolitano/hugo-mysql-db-setup
+githubUrl: https://github.com/justin-napolitano/hugo-mysql-db-setup
+generatedAt: '2025-11-23T09:06:35.619764Z'
+source: github-auto
+summary: >-
+  Python-based automation of MySQL database creation, management, and schema deployment tailored for
+  Hugo blog integration.
+tags:
+  - mysql
+  - hugo
+  - python
+  - database-automation
+  - dotenv
+seoPrimaryKeyword: mysql database setup
+seoSecondaryKeywords:
+  - hugo blog integration
+  - python mysql automation
+seoOptimized: true
 ---
-
 
 # Automating MySQL Database Setup for Hugo Blog Integration
 
