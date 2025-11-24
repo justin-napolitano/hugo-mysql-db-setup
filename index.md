@@ -19,6 +19,12 @@ seoSecondaryKeywords:
   - hugo blog integration
   - python mysql automation
 seoOptimized: true
+topicFamily: automation
+topicFamilyConfidence: 0.95
+topicFamilyNotes: >-
+  The post describes a Python-based automated process for managing MySQL database setup, including
+  connection handling, schema deployment, and environment management, aligning well with the
+  'Automation' family which focuses on scripting and automation workflows.
 ---
 
 # Automating MySQL Database Setup for Hugo Blog Integration
@@ -82,3 +88,4 @@ This project provides a practical, code-driven approach to managing MySQL databa
 ---
 
 This document serves as a technical reference for developers returning to this project, emphasizing the architectural decisions and practical usage without extraneous motivation or marketing language.
+
